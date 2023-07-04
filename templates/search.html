@@ -79,30 +79,19 @@
                 </form>
             </div>
         </div>
+        <br><br><br>
+        <h2>All Dishes:</h2>
+        <ul>
+            {% for dish_name in all_results %}
+                <li>{{ dish_name }}</li>
+            {% endfor %}
+        </ul>
          
 
         <!-- <form action="{% url 'search_view' %}" method="GET">
             <input  type="text" name="q" placeholder="Search for dishes...">
             <button  type="submit">Search</button>
         </form> -->
-        <br><br><br>
-        <h2>Result Match:</h2>
-        <ul>
-            {% for dish_name in exact_results %}
-                <li>{{ dish_name }}</li>
-            {% empty %}
-                <li>No exact match found.</li>
-            {% endfor %}
-        </ul>
-        
-        <h2>Related/Recommended Results:</h2>
-        <ul>
-            {% for dish_name in related_results %}
-                <li>{{ dish_name }}</li>
-            {% empty %}
-                <li>No related results found.</li>
-            {% endfor %}
-        </ul>
     </body>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
 </html>
