@@ -12,37 +12,40 @@ import json
 
 def Search(request):
     query = request.GET.get('q', '')
-
-    # Filter dishes based on query
     results = Food.objects.filter(Q(items__icontains=query) | Q(name__icontains=query)).values('items')
-    all_results = []
+    all_dishes = []
     for result in results:
         items_data = json.loads(result['items'])
-        for dish_name in items_data.keys(): 
-            all_results.append(dish_name)
+        for dish_name, dish_price in items_data.items():
+            all_dishes.append((dish_name, dish_price))
+    
+    total_count = len(all_dishes)
+    half_count = total_count // 2
+
+    first_half = all_dishes[:half_count]
+    second_half = all_dishes[half_count:]
 
     context = {
         'query': query,
-        'all_results': all_results,
+        'first_half': first_half,
+        'second_half': second_half,
     }
-
     return render(request, 'search.html', context)
 
 def search_view(request):
     query = request.GET.get('q', '')
 
-    # Filter dishes based on query
     results = Food.objects.filter(Q(items__icontains=query) | Q(name__icontains=query)).values('items')
 
-    exact_results = set()
+    exact_results = {}
     related_results = []
     for result in results:
         items_data = json.loads(result['items'])
-        for dish_name in items_data.keys(): 
+        for dish_name, dish_price in items_data.items():
             if query.lower() == dish_name.lower():
-                exact_results.add(dish_name)
+                exact_results[dish_name] = dish_price
             elif query.lower() in dish_name.lower():
-                related_results.append(dish_name)
+                related_results.append((dish_name, dish_price))
 
     context = {
         'query': query,
@@ -51,54 +54,3 @@ def search_view(request):
     }
 
     return render(request, 'index.html', context)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # if 'q' in request.GET:
-    #     query = request.GET['q']
-    #     results = Food.objects.filter(name__icontains=query)
-    #     best_match = results.first() if results.exists() else None
-    # else:
-    #     query = ''
-    #     results = []
-    #     best_match = None
-    
-    # context = {
-    #     'query': query,
-    #     'results': results,
-    #     'best_match': best_match
-    # }
-
-    # return render(request, 'search.html', context)
-
-
-
-    # query = request.GET.get('q')
-    # if query:
-    #     # Perform a case-insensitive search for dishes that contain the query string
-    #     results = Food.objects.filter(name__icontains=query)
-        
-    #     # Retrieve recommendations using the recommendations API endpoint
-    #     query_encoded = urllib.parse.quote_plus(query)
-    #     response = requests.get(f'http://localhost:8000/dish/recommendations/{query_encoded}/')
-    #     try:
-    #         recommendations = response.json()
-    #     except json.JSONDecodeError as e:
-    #         print(f"Error decoding JSON: {str(e)}")
-    #         recommendations = []
-    
-    # return render(request, 'search.html', {'results': results, 'query': query, 'recommendations': recommendations})
