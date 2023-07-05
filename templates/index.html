@@ -1,108 +1,118 @@
+<!DOCTYPE html>
 <html>
-    <head>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    </head>
+<head>
+    <title>Search Dishes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-		
-        /* styling navlist */
-        #navlist {
-            background-color: black;
-            position: absolute;
-            width: 100%;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0px;
         }
-            
-        /* styling navlist anchor element */
-        #navlist a {
-            float:left;
-            display: block;
-            color: #f2f2f2;
+
+        .navbar {
+            background-color: #333;
+        }
+
+        .navbar-brand,
+        .navbar-nav .nav-link {
+            color: #fff;
+        }
+
+        .navbar-brand {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .navbar-items {
+            margin-right: auto;
+            margin-left:10px;
+        }
+
+        .search-form {
+            margin-top: 20px;
+        }
+
+        .search-input {
+            width: 300px;
+        }
+
+        .search-button {
+            margin:0px 20px;
+        }
+
+        .results {
+            margin-top: 40px;
+        }
+
+        .result-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .result-item {
+            background-color: #f0f0f0;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .no-results {
             text-align: center;
-            padding: 15px;
-            text-decoration: none;
-            font-size: 15px;
-            margin: 0px;
-        }
-        
-        .navlist-right{
-            float:right;
-        }
-    
-        /* hover effect of navlist anchor element */
-        #navlist a:hover {
-            background-color: #ddd;
-            color: black;
-        }
-            
-        /* styling search bar */
-        .search input[type=text]{
-            width:300px;
-            height:35px;
-            border-radius:5px;
-            border: none;
-        }
-            
-        .search{
-            float:right;
-            margin:7px;
-        }
-            
-        .search button{
-            background-color: black;
-            color: #f2f2f2;
-            float: right;
-            padding: 5px 10px;
-            margin-right: 16px;
-            font-size: 12px;
-            border: none;
-            cursor: pointer;
+            color: #888888;
         }
     </style>
-    
-    
-    <body>
-        <div id="navlist">
-            <a href="search">Meals</a>
-            <a href="#">About Us</a>
-            <a href="#">Contact Us</a>
-             
-            <!-- search bar right align -->
-            <div class="search">
-                <form action="{% url 'search_view' %}" method="GET">
-                    <input type="text"
-                        placeholder=" Search Dishes"
-                        name="q">
-                    <button>
-                        <i class="fa fa-search"
-                            style="font-size: 18px;" type="submit">Search
-                        </i>
-                    </button>
-                </form>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="navbar-items">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="search">Meals</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">About Us</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Contact Us</a>
+                </li>
+            </ul>
+        </div>
+        <form class="form-inline search-form" action="{% url 'search_view' %}" method="GET">
+            <div class="input-group">
+                <input class="form-control search-input" type="text" placeholder="Search Dishes" name="q">
+                <div class="input-group-append">
+                    <button class="btn btn-primary search-button" type="submit">Search</button>
+                </div>
+            </div>
+        </form>
+    </nav>
+
+    <div class="container results">
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Search Match:</h2>
+                <ul class="result-list">
+                    {% for dish_name, dish_price in exact_results.items %}
+                        <li class="result-item">{{ dish_name }} -: {{ dish_price }}</li>
+                    {% empty %}
+                        <li class="no-results">No exact match found.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h2>Related/Recommended Match:</h2>
+                <ul class="result-list">
+                    {% for dish_name, dish_price in related_results %}
+                        <li class="result-item">{{ dish_name }} -: {{ dish_price }}</li>
+                    {% empty %}
+                        <li class="no-results">No related results found.</li>
+                    {% endfor %}
+                </ul>
             </div>
         </div>
-         
-
-        <!-- <form action="{% url 'search_view' %}" method="GET">
-            <input  type="text" name="q" placeholder="Search for dishes...">
-            <button  type="submit">Search</button>
-        </form> -->
-        <br><br><br>
-        <h2>Result Match:</h2>
-        <ul>
-            {% for dish_name in exact_results %}
-                <li>{{ dish_name }}</li>
-            {% empty %}
-                <li>No exact match found.</li>
-            {% endfor %}
-        </ul>
-        
-        <h2>Related/Recommended Results:</h2>
-        <ul>
-            {% for dish_name in related_results %}
-                <li>{{ dish_name }}</li>
-            {% empty %}
-                <li>No related results found.</li>
-            {% endfor %}
-        </ul>
-    </body>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    </div> 
+    
+</body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </html>
